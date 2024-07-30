@@ -47,6 +47,16 @@ allreduce =                           \
 	allreduce/allreduce_sliding_window_setup.c \
 	allreduce/allreduce_dbt.c
 
+my_allreduce =                           \
+	my_allreduce/my_allreduce.h                      \
+	my_allreduce/my_allreduce.c                      \
+	my_allreduce/my_allreduce_knomial.c              \
+	my_allreduce/my_allreduce_sra_knomial.c          \
+	my_allreduce/my_allreduce_sliding_window.h       \
+	my_allreduce/my_allreduce_sliding_window.c       \
+	my_allreduce/my_allreduce_sliding_window_setup.c \
+	my_allreduce/my_allreduce_dbt.c
+
 barrier =                     \
 	barrier/barrier.h         \
 	barrier/barrier.c         \
@@ -120,6 +130,7 @@ sources =                 \
 	$(alltoall)           \
 	$(alltoallv)          \
 	$(allreduce)          \
+	$(my_allreduce)       \
 	$(barrier)            \
 	$(bcast)              \
 	$(fanin)              \
