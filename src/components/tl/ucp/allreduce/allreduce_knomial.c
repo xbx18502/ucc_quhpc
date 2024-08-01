@@ -42,6 +42,9 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     ucc_kn_radix_t         loop_step;
     int                    is_avg;
 
+    /* add a file*/
+    FILE *log_file = fopen("~/work/logfile.log", "a");
+
     if (UCC_IS_INPLACE(*args)) {
         sbuf = rbuf;
     }
@@ -50,12 +53,33 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     if (KN_NODE_EXTRA == node_type) {
         peer = ucc_ep_map_eval(task->subset.map,
                                ucc_knomial_pattern_get_proxy(p, rank));
-        UCPCHECK_GOTO(
-            ucc_tl_ucp_send_nb(sbuf, data_size, mem_type, peer, team, task),
-            task, out);
-        UCPCHECK_GOTO(
-            ucc_tl_ucp_recv_nb(rbuf, data_size, mem_type, peer, team, task),
-            task, out);
+        // UCPCHECK_GOTO(
+        //     ucc_tl_ucp_send_nb(sbuf, data_size, mem_type, peer, team, task),
+        //     task, out);
+        // UCPCHECK_GOTO(
+        //     ucc_tl_ucp_recv_nb(rbuf, data_size, mem_type, peer, team, task),
+        //     task, out);
+        ptrdiff_t          src      = (ptrdiff_t)TASK_ARGS(task).src.info_v.buffer;
+        ptrdiff_t          dest     = (ptrdiff_t)TASK_ARGS(task).dst.info_v.buffer;
+        size_t             sd_disp, dd_disp;
+        ucc_aint_t        *s_disp   = TASK_ARGS(task).src.info_v.displacements;
+        ucc_aint_t        *d_disp   = TASK_ARGS(task).dst.info_v.displacements;
+        long              *pSync    = TASK_ARGS(task).global_work_buffer;
+        sd_disp =
+            ucc_coll_args_get_displacement(&TASK_ARGS(task), s_disp, peer) *
+            data_size;
+        dd_disp =
+            ucc_coll_args_get_displacement(&TASK_ARGS(task), d_disp, peer) *
+            data_size;
+
+        UCPCHECK_GOTO(ucc_tl_ucp_put_nb(PTR_OFFSET(src, sd_disp),
+                                        PTR_OFFSET(dest, dd_disp),
+                                        data_size, peer, team, task),
+                      task, out);
+        // fprintf(stderr, "executing ucc_tl_ucp_put_nb\n");
+        fprintf(log_file , "Executing ucc_tl_ucp_put_nb, this is a routine log message.\n");
+        fclose(log_file);
+        UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
 
     if (KN_NODE_PROXY == node_type) {

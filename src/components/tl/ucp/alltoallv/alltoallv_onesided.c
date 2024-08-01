@@ -50,6 +50,10 @@ ucc_status_t ucc_tl_ucp_alltoallv_onesided_start(ucc_coll_task_t *ctask)
                       task, out);
         UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
+    //////////////////////////////////////////////////
+    /* Add a local reduce here */
+    
+    //////////////////////////////////////////////////
     return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
 out:
     return task->super.status;
