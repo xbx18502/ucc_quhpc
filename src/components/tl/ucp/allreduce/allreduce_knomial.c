@@ -42,8 +42,6 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     ucc_kn_radix_t         loop_step;
     int                    is_avg;
 
-    /* add a file*/
-    FILE *log_file = fopen("~/work/logfile.log", "a");
 
     if (UCC_IS_INPLACE(*args)) {
         sbuf = rbuf;
@@ -76,9 +74,8 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
                                         PTR_OFFSET(dest, dd_disp),
                                         data_size, peer, team, task),
                       task, out);
-        // fprintf(stderr, "executing ucc_tl_ucp_put_nb\n");
-        fprintf(log_file , "Executing ucc_tl_ucp_put_nb, this is a routine log message.\n");
-        fclose(log_file);
+        fprintf(stderr, "executing ucc_tl_ucp_put_nb\n");
+    
         UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
 
