@@ -1,3 +1,8 @@
+# This is the repository of team 'Quhpc' for 2024-rdma-programming-lectures and hachathon
+
+## explain what we have done
+try to change the  two sided communication 'ucc_tl_ucp_send_nb' to 'ucc_tl_ucp_put_nb', in /ucc/src/components/tl/ucp/allreduce/allreduce_knomial.c 's  ln 56 col12 , it can be compiled successfully but the correctness has not been tested yet.
+
 # Unified Collective Communication (UCC)
 
 <img src="docs/images/ucc_logo.png" width="75%" height="75%">
@@ -111,5 +116,3 @@ $ mpirun -np 2 --mca scoll_ucc_enable 1 --mca scoll_ucc_priority 100 ./my_opensh
 * NCCL
 * RCCL
 
-# explain what we have done
-try to change the  two sided communication 'ucc_tl_ucp_send_nb' to 'ucc_tl_ucp_put_nb', in /ucc/src/components/tl/ucp/allreduce/allreduce_knomial.c 's  ln 56 col12 , it can be compiled successfully but the correctness has not been tested.
