@@ -74,7 +74,7 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
                                         PTR_OFFSET(dest, dd_disp),
                                         data_size, peer, team, task),
                       task, out);
-        fprintf(stderr, "executing ucc_tl_ucp_put_nb\n");
+        // fprintf(stderr, "executing ucc_tl_ucp_put_nb\n");
     
         UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
