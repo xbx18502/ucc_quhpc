@@ -41,7 +41,7 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     ucc_status_t           status;
     ucc_kn_radix_t         loop_step;
     int                    is_avg;
-    long                  *pSync  =TASK_ARGS(task).global_work_buffer;
+    //long                  *pSync  =TASK_ARGS(task).global_work_buffer;
     if (UCC_IS_INPLACE(*args)) {
         sbuf = rbuf;
     }
@@ -50,15 +50,15 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     if (KN_NODE_EXTRA == node_type) {
         peer = ucc_ep_map_eval(task->subset.map,
                                ucc_knomial_pattern_get_proxy(p, rank));
-        // UCPCHECK_GOTO(
-        //     ucc_tl_ucp_send_nb(sbuf, data_size, mem_type, peer, team, task),
-        //     task, out);
-        // UCPCHECK_GOTO(
-        //     ucc_tl_ucp_recv_nb(rbuf, data_size, mem_type, peer, team, task),
-        //     task, out);
-        UCPCHECK_GOTO(ucc_tl_ucp_put_nb(sbuf, rbuf, data_size, peer, team, task),
-                      task, out);
-        UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
+        UCPCHECK_GOTO(
+            ucc_tl_ucp_send_nb(sbuf, data_size, mem_type, peer, team, task),
+            task, out);
+        UCPCHECK_GOTO(
+            ucc_tl_ucp_recv_nb(rbuf, data_size, mem_type, peer, team, task),
+            task, out);
+        // UCPCHECK_GOTO(ucc_tl_ucp_put_nb(sbuf, rbuf, data_size, peer, team, task),
+        //               task, out);
+        // UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
 
     if (KN_NODE_PROXY == node_type) {
