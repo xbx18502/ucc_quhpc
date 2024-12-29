@@ -1,0 +1,12 @@
+[
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../../../../../src/components/tl/ucp -I../../../.. -DCPU_FLAGS= -I/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build/../src -I/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build -I/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build/src -I/home/app/hpcx/2.20.0/ucx/include/ -I/home/app/hpcx/2.20.0/ucx/include/ -Wall -Werror -funwind-tables -Wno-missing-field-initializers -Wno-unused-parameter -Wno-long-long -Wno-endif-labels -Wno-sign-compare -Wno-multichar -Wno-deprecated-declarations -Winvalid-pch -Wno-pointer-sign -Werror-implicit-function-declaration -Wnested-externs -Wshadow -O3 -g -DNDEBUG -std=gnu11 -fPIC -DPIC -o allreduce/.libs/libucc_tl_ucp_la-allreduce_knomial.o ../../../../../src/components/tl/ucp/allreduce/allreduce_knomial.c",
+        "directory": "/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build/src/components/tl/ucp",
+        "file": "/home/pj24001791/ku40000464/openucc/ucc-1.3.0/src/components/tl/ucp/allreduce/allreduce_knomial.c"
+    },
+    {
+        "command": "cc -c -DHAVE_CONFIG_H -I. -I../../../../../src/components/tl/ucp -I../../../.. -DCPU_FLAGS= -I/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build/../src -I/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build -I/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build/src -I/home/app/hpcx/2.20.0/ucx/include/ -I/home/app/hpcx/2.20.0/ucx/include/ -Wall -Werror -funwind-tables -Wno-missing-field-initializers -Wno-unused-parameter -Wno-long-long -Wno-endif-labels -Wno-sign-compare -Wno-multichar -Wno-deprecated-declarations -Winvalid-pch -Wno-pointer-sign -Werror-implicit-function-declaration -Wnested-externs -Wshadow -O3 -g -DNDEBUG -std=gnu11 -o allreduce/libucc_tl_ucp_la-allreduce_knomial.o ../../../../../src/components/tl/ucp/allreduce/allreduce_knomial.c",
+        "directory": "/home/pj24001791/ku40000464/openucc/ucc-1.3.0/build/src/components/tl/ucp",
+        "file": "/home/pj24001791/ku40000464/openucc/ucc-1.3.0/src/components/tl/ucp/allreduce/allreduce_knomial.c"
+    }
+]
