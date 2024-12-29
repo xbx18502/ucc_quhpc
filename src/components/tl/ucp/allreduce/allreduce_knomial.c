@@ -30,8 +30,7 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     void                  *scratch    = task->allreduce_kn.scratch;
     void                  *sbuf       = args->src.info.buffer;
     void                  *rbuf       = args->dst.info.buffer;
-    long                  *pSync      = args->global_work_buffer;
-    //ucc_memory_type_t      mem_type   = args->dst.info.mem_type;
+    ucc_memory_type_t      mem_type   = args->dst.info.mem_type;
     size_t                 count      = args->dst.info.count;
     ucc_datatype_t         dt         = args->dst.info.datatype;
     size_t                 data_size  = count * ucc_dt_size(dt);
@@ -42,7 +41,7 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     ucc_status_t           status;
     ucc_kn_radix_t         loop_step;
     int                    is_avg;
-
+    long                  *pSync  =TASK_ARGS(task).global_work_buffer;
     if (UCC_IS_INPLACE(*args)) {
         sbuf = rbuf;
     }
@@ -51,9 +50,14 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
     if (KN_NODE_EXTRA == node_type) {
         peer = ucc_ep_map_eval(task->subset.map,
                                ucc_knomial_pattern_get_proxy(p, rank));
-        UCPCHECK_GOTO(
-            ucc_tl_ucp_put_nb(sbuf, rbuf, data_size, peer, team, task),
-            task, out);
+        // UCPCHECK_GOTO(
+        //     ucc_tl_ucp_send_nb(sbuf, data_size, mem_type, peer, team, task),
+        //     task, out);
+        // UCPCHECK_GOTO(
+        //     ucc_tl_ucp_recv_nb(rbuf, data_size, mem_type, peer, team, task),
+        //     task, out);
+        UCPCHECK_GOTO(ucc_tl_ucp_put_nb(sbuf, rbuf, data_size, peer, team, task),
+                      task, out);
         UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
 
@@ -61,9 +65,8 @@ void ucc_tl_ucp_allreduce_knomial_progress(ucc_coll_task_t *coll_task)
         peer = ucc_ep_map_eval(task->subset.map,
                                ucc_knomial_pattern_get_extra(p, rank));
         UCPCHECK_GOTO(
-            ucc_tl_ucp_put_nb(scratch, scratch, data_size, peer, team, task),
+            ucc_tl_ucp_recv_nb(scratch, data_size, mem_type, peer, team, task),
             task, out);
-        UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
     }
 UCC_KN_PHASE_EXTRA:
     if (KN_NODE_PROXY == node_type || KN_NODE_EXTRA == node_type) {
@@ -101,9 +104,9 @@ UCC_KN_PHASE_EXTRA_REDUCE:
                 send_buf = rbuf;
             }
             UCPCHECK_GOTO(
-                ucc_tl_ucp_put_nb(send_buf, rbuf, data_size, peer, team, task),
+                ucc_tl_ucp_send_nb(send_buf, data_size, mem_type, peer, team,
+                                   task),
                 task, out);
-            UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
         }
 
         recv_offset = 0;
@@ -113,10 +116,9 @@ UCC_KN_PHASE_EXTRA_REDUCE:
                 continue;
             peer = ucc_ep_map_eval(task->subset.map, peer);
             UCPCHECK_GOTO(
-                ucc_tl_ucp_put_nb((void *)((ptrdiff_t)scratch + recv_offset),
-                                   scratch, data_size, peer, team, task),
+                ucc_tl_ucp_recv_nb((void *)((ptrdiff_t)scratch + recv_offset),
+                                   data_size, mem_type, peer, team, task),
                 task, out);
-            UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
             recv_offset += data_size;
         }
 
@@ -159,9 +161,8 @@ UCC_KN_PHASE_REDUCE:
         peer = ucc_ep_map_eval(task->subset.map,
                                ucc_knomial_pattern_get_extra(p, rank));
         UCPCHECK_GOTO(
-            ucc_tl_ucp_put_nb(rbuf, rbuf, data_size, peer, team, task),
+            ucc_tl_ucp_send_nb(rbuf, data_size, mem_type, peer, team, task),
             task, out);
-        UCPCHECK_GOTO(ucc_tl_ucp_atomic_inc(pSync, peer, team), task, out);
         goto UCC_KN_PHASE_PROXY;
     } else {
         goto completion;
@@ -174,7 +175,6 @@ UCC_KN_PHASE_PROXY:
     }
 
 completion:
-    pSync[0] = 0;  // Reset synchronization
     ucc_assert(UCC_TL_UCP_TASK_P2P_COMPLETE(task));
     task->super.status = UCC_OK;
     UCC_TL_UCP_PROFILE_REQUEST_EVENT(coll_task, "ucp_allreduce_kn_done", 0);
